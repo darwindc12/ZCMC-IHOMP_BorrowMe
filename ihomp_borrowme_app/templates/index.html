@@ -6,21 +6,26 @@
         {% for category in category_list %}
             <h2 class="pt-5">{{ category.category_description  }}</h2>
                 {% for peripheral in peripheral_list %}
-                    {% if peripheral.category_id == category.category_id %}
-                        {% if peripheral.status == 0 %}
+                    {% if peripheral.peripheral_id == category.category_id %}
+                        {% if peripheral.status_id == 1 %}
                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 pb-0">
-                            <h3><del>{{ peripheral.peripheral_description }}</del></h3>
+                            <h3>{{ peripheral.peripheral_description }}</h3>
                         </li>
                         <li class="list-group-item pt-0">
                             <p>{{ peripheral.unique_number }}</p>
+                            <span style="color: green;">Available</span>
                         </li>
+
                         {% else %}
                         <li class="list-group-item d-flex justify-content-between align-items-center border-0 pb-0">
                             <h3>{{ peripheral.peripheral_description }}</h3>
                         </li>
                         <li class="list-group-item pt-0">
                             <p>{{ peripheral.unique_number }}</p>
+                            <span style="color: red;">Unavailable</span>
                         </li>
+
+
                         {% endif %}
                     {% endif %}
                 {% endfor %}
@@ -28,7 +33,7 @@
     </ul>
     <div class="d-flex justify-content-center align-items-center">
         <!-- Centered button -->
-        <a class="btn btn-primary" href="{% url 'borrow' %}">Go to Borrow Page</a>
+        <a class="btn btn-primary" href="{% url 'home' %}">Go to Borrow Page</a>
     </div>
 
 </div>
