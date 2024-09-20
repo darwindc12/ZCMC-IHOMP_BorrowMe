@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
+from django.views.generic import ListView
 from .models import Department, Category, Peripheral, Borrow
 from .forms import BorrowerForm
 
