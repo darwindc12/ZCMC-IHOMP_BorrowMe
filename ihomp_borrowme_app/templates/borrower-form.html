@@ -1,129 +1,41 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block content %}
-<div class="container">
-    <h1 class="mt-4 mb-4">Borrow a Device</h1>
-    <form method="post" action="{% url 'borrow' %}">
-        {% csrf_token %}
-        <div class="form-group mb-4">
-            <label for="borrower_name">Your Name:</label>
-            <input class="form-control" type="text" id="borrower_name" name="borrower_name" required>
-        </div>
-        <div class="form-group mb-4">
-            <label for="department">Your Department:</label>
-            <select class="form-control" id="department" name="department" required>
-                <option value="">Choose a Department</option>
-                {% for department in department_list %}
-                    <option value="{{ department.department_id }}">{{ department.department_description }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group mb-4">
-            <label for="category">Device Category:</label>
-            <select class="form-control" id="category" name="category" required>
-                <option value="">Pick a Category</option>
-                {% for category in category_list %}
-                    <option value="{{ category.category_id }}">{{ category.category_description }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group mb-4">
-            <label for="peripheral">Peripheral:</label>
-            <select class="form-control" id="peripheral" name="peripheral" required>
-                <option value="">Select a Category First</option>
-            </select>
-        </div>
-        <div class="form-group mb-4">
-            <label for="unique_number">Unique Number:</label>
-            <select class="form-control" id="unique_number" name="unique_number" required>
-                <option value="">Select a Peripheral First</option>
-            </select>
-        </div>
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    </head>
+    <body>
 
-        <div class="text-center">
-          <button class="btn btn-primary mb-4" type="submit">Borrow Now</button>
-        </div>
+        <!-- Navbar for easy navigation -->
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">My App</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'home' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'about' %}">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-        {% if messages %}
-        <div class="alert alert-success">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
-        {% endif %}
+        <!-- Main content will be injected here -->
+        {% block content %}
+        {% endblock content %}
 
-    </form>
-</div>
+        <!-- jQuery and Bootstrap JavaScript -->
+        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
 
-<script>
-document.getElementById("category").addEventListener("change", function() {
-    var selectedCategory = this.value;
-    var peripheralDropdown = document.getElementById("peripheral");
-    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    if (selectedCategory) {
-        // Fetch peripherals for the selected category
-        fetch(`/get_peripherals/${selectedCategory}/`, {
-            method: "GET",
-            headers: {
-                "X-CSRFToken": csrfToken,
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            peripheralDropdown.innerHTML = ""; // Clear previous options
-            peripheralDropdown.appendChild(new Option("Choose a Peripheral", ""));
-            data.peripherals.forEach(function(peripheral) {
-                var option = document.createElement("option");
-                option.value = peripheral.peripheral_id;
-                option.text = peripheral.peripheral_description;
-                peripheralDropdown.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching peripherals:", error);
-        });
-    } else {
-        peripheralDropdown.innerHTML = '<option value="">Select a Category First</option>';
-    }
-
-    // Reset the "Unique Number" dropdown when the category changes
-    document.getElementById("unique_number").innerHTML = '<option value="">Select a Peripheral First</option>';
-});
-
-document.getElementById("peripheral").addEventListener("change", function() {
-    var selectedPeripheral = this.value;
-    var uniqueNumberDropdown = document.getElementById("unique_number");
-    var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-    if (selectedPeripheral) {
-        // Fetch unique numbers for the selected peripheral
-        fetch(`/get_unique_number/${selectedPeripheral}/`, {
-            method: "GET",
-            headers: {
-                "X-CSRFToken": csrfToken,
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            uniqueNumberDropdown.innerHTML = "";
-            if (data.uniqueNumbers.length > 0) {
-                data.uniqueNumbers.forEach(function(number) {
-                    var option = document.createElement("option");
-                    option.value = number.unique_number_id;
-                    option.text = number.unique_number_description;
-                    uniqueNumberDropdown.appendChild(option);
-                });
-            } else {
-                uniqueNumberDropdown.innerHTML = '<option value="">No unique numbers available</option>';
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching unique numbers:", error);
-        });
-    } else {
-        uniqueNumberDropdown.innerHTML = '<option value="">Select a Peripheral First</option>';
-    }
-});
-</script>
-{% endblock content %}
+    </body>
+</html>
