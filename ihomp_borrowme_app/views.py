@@ -1,89 +1,55 @@
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from .models import Peripheral, Category, Department
-from .forms import BorrowerForm
-from django.contrib import messages
-from .models import Borrow
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.contrib import messages
+from .models import Department, Category, Peripheral, Borrow
+from .forms import BorrowerForm
 
-
-class CombinedListView(generic.ListView):
-    model = Category
-    # queryset = Category.objects.order_by("-date_created")
-    template_name = "index.html"
-    # context_object_name = 'category_list'
+# Home page that pulls together departments, categories, and peripherals for the user to browse
+class OverviewPageView(ListView):
+    template_name = 'index.html'
+    context_object_name = 'data'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['department_list'] = Department.objects.all()
-        context['category_list'] = Category.objects.all()
-        context['peripheral_list'] = Peripheral.objects.all()
+        context['departments'] = Department.objects.all()
+        context['categories'] = Category.objects.all()
+        context['peripherals'] = Peripheral.objects.all()
         return context
 
-
-def borrow_form(request):
-    department_list = Department.objects.all()
-    category_list = Category.objects.all()
-    peripheral_list = []
+# Handling the borrowing form submission process
+def handle_borrow_request(request):
+    form = BorrowerForm()
 
     if request.method == 'POST':
         form = BorrowerForm(request.POST)
         if form.is_valid():
-            borrower_name = form.cleaned_data['borrower_name']
-            department_id = form.cleaned_data['department']
-            category_id = form.cleaned_data['category']
-            peripheral_id = form.cleaned_data['peripheral']
-            unique_number = form.cleaned_data['unique_number']
+            borrow = form.save(commit=False)
+            selected_peripheral = Peripheral.objects.get(id=borrow.peripheral.id)
+            selected_peripheral.status = 2  # Assuming '2' means borrowed
+            selected_peripheral.save()
+            borrow.save()
 
-            print(unique_number)
+            # Giving feedback to the user
+            messages.success(request, 'Device successfully borrowed!')
+            return redirect('homepage')
 
-            # Get Department, Category, and Peripheral instances based on IDs
-            department = get_object_or_404(Department, department_id=department_id)
-            category = get_object_or_404(Category, category_id=category_id)
-            peripheral = get_object_or_404(Peripheral, peripheral_id=peripheral_id)
+    return render(request, 'borrow_form.html', {'form': form})
 
-            # Create the Borrow object with instances
-            Borrow.objects.create(
-                borrower_name=borrower_name,
-                department=department,
-                category=category,
-                peripheral=peripheral,
-                unique_number=unique_number
-            )
+# Dynamically updating peripherals based on selected category
+def fetch_peripherals(request):
+    category_id = request.GET.get('category_id')
+    peripherals = Peripheral.objects.filter(category_id=category_id, status=1)  # Assuming '1' means available
+    peripherals_list = list(peripherals.values('id', 'name'))
+    return JsonResponse(peripherals_list, safe=False)
 
-            Peripheral.objects.filter(unique_number=unique_number).update(status=2)
-
-            messages.success(request, 'Form submitted successfully!')
-
-        # You should include the code to update peripheral_list based on the selected category here.
-        if category_id:
-            peripheral_list = Peripheral.objects.filter(category=category)
-
-    return render(request, "borrower-form.html", {
-        'department_list': department_list,
-        'category_list': category_list,
-        'peripheral_list': peripheral_list,
-    })
-
-
-def get_peripherals(request, category_id):
-    peripherals = Peripheral.objects.filter(category_id=category_id, status=1)
-    data = [{"peripheral_id": peripheral.peripheral_id, "peripheral_description": peripheral.peripheral_description} for peripheral in peripherals]
-    print(data)
-    return JsonResponse({"peripherals": data})
-
-
-def get_unique_number(request, peripheral_id):
+# Providing unique numbers associated with a selected peripheral
+def get_peripheral_unique_numbers(request):
+    peripheral_id = request.GET.get('peripheral_id')
+    unique_numbers = []
     try:
-        peripheral = Peripheral.objects.get(pk=peripheral_id)
-        unique_numbers = peripheral.unique_number.split(',') if peripheral.unique_number else []
-        data = [{"unique_number_id": num, "unique_number_description": num} for num in unique_numbers]
-        print(data)
+        peripheral = Peripheral.objects.get(id=peripheral_id)
+        unique_numbers = list(peripheral.unique_numbers.values('number'))
     except Peripheral.DoesNotExist:
-        data = []
+        pass  # If no peripheral is found, return an empty list
 
-    return JsonResponse({"uniqueNumbers": data})
-
-
-
-
+    return JsonResponse(unique_numbers, safe=False)
