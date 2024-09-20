@@ -1,54 +1,56 @@
 from django.contrib import admin
 from .models import Borrow, Department, Peripheral, Category, Status
 
-
+# Custom admin settings for the Borrow model
 class BorrowAdmin(admin.ModelAdmin):
     list_display = ("borrow_id", "borrower_name", "department", "category", "peripheral", "unique_number", "status")
     list_filter = ("status",)
-    search_fields = ("borrower_name", "department__department_description")
+    search_fields = ("borrower_name", "department__description")
     list_editable = ("status",)
 
     def save_model(self, request, obj, form, change):
-        # Get the original status of the Borrow object before saving changes
+        # Check the original status of the borrow before saving the updated version
         original_borrow = Borrow.objects.get(pk=obj.pk)
 
-        # Save the updated Borrow object
+        # Save the new information about the borrow
         obj.save()
 
-        # Check if the status has changed
+        # If the status has changed, update the peripheral's status too
         if original_borrow.status != obj.status:
-            # Update the related Peripheral's status
             obj.peripheral.status = obj.status
             obj.peripheral.save()
 
-
+# Register the Borrow model in the admin interface
 admin.site.register(Borrow, BorrowAdmin)
 
-
+# Custom admin settings for the Department model
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ("department_id", "department_description")
-    search_fields = ("department_description",)
+    list_display = ("department_id", "description")
+    search_fields = ("description",)
 
-
+# Register the Department model in the admin interface
 admin.site.register(Department, DepartmentAdmin)
 
-
+# Custom admin settings for the Peripheral model
 class PeripheralAdmin(admin.ModelAdmin):
-    list_display = ("peripheral_id", "peripheral_description", "unique_number","status")
+    list_display = ("peripheral_id", "description", "unique_number", "status")
     list_filter = ("status",)
-    search_fields = ("peripheral_description", "unique_number")
+    search_fields = ("description", "unique_number")
 
-
+# Register the Peripheral model in the admin interface
 admin.site.register(Peripheral, PeripheralAdmin)
 
-
+# Custom admin settings for the Category model
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("category_id", "category_description")
-    search_fields = ("category_description",)
+    list_display = ("category_id", "description")
+    search_fields = ("description",)
 
+# Register the Category model in the admin interface
 admin.site.register(Category, CategoryAdmin)
+
+# Custom admin settings for the Status model
 class StatusAdmin(admin.ModelAdmin):
-    list_display = ("status_id", "status_name")
+    list_display = ("status_id", "name")
 
+# Register the Status model in the admin interface
 admin.site.register(Status, StatusAdmin)
-
