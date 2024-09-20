@@ -2,26 +2,26 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="mt-4 mb-4">IHOMP Borrow Form</h1>
+    <h1 class="mt-4 mb-4">Borrow a Device</h1>
     <form method="post" action="{% url 'borrow' %}">
         {% csrf_token %}
         <div class="form-group mb-4">
-            <label for="borrower_name">Name:</label>
+            <label for="borrower_name">Your Name:</label>
             <input class="form-control" type="text" id="borrower_name" name="borrower_name" required>
         </div>
         <div class="form-group mb-4">
-            <label for="department">Department:</label>
+            <label for="department">Your Department:</label>
             <select class="form-control" id="department" name="department" required>
-                <option value="">Select a Department</option>
+                <option value="">Choose a Department</option>
                 {% for department in department_list %}
                     <option value="{{ department.department_id }}">{{ department.department_description }}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="form-group mb-4">
-            <label for="category">Category:</label>
+            <label for="category">Device Category:</label>
             <select class="form-control" id="category" name="category" required>
-                <option value="">Select a Category</option>
+                <option value="">Pick a Category</option>
                 {% for category in category_list %}
                     <option value="{{ category.category_id }}">{{ category.category_description }}</option>
                 {% endfor %}
@@ -44,8 +44,6 @@
           <button class="btn btn-primary mb-4" type="submit">Borrow Now</button>
         </div>
 
-
-
         {% if messages %}
         <div class="alert alert-success">
             {% for message in messages %}
@@ -54,21 +52,18 @@
         </div>
         {% endif %}
 
-
     </form>
-
-
 </div>
 
 <script>
 document.getElementById("category").addEventListener("change", function() {
-    var selectedCategoryId = this.value;
+    var selectedCategory = this.value;
     var peripheralDropdown = document.getElementById("peripheral");
     var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    if (selectedCategoryId) {
-        // Make an AJAX request to fetch peripherals for the selected category
-        fetch(`/get_peripherals/${selectedCategoryId}/`, {
+    if (selectedCategory) {
+        // Fetch peripherals for the selected category
+        fetch(`/get_peripherals/${selectedCategory}/`, {
             method: "GET",
             headers: {
                 "X-CSRFToken": csrfToken,
@@ -76,8 +71,8 @@ document.getElementById("category").addEventListener("change", function() {
         })
         .then(response => response.json())
         .then(data => {
-            peripheralDropdown.innerHTML = ""; // Clear the existing options
-            peripheralDropdown.appendChild(new Option("Select a Peripheral", ""));
+            peripheralDropdown.innerHTML = ""; // Clear previous options
+            peripheralDropdown.appendChild(new Option("Choose a Peripheral", ""));
             data.peripherals.forEach(function(peripheral) {
                 var option = document.createElement("option");
                 option.value = peripheral.peripheral_id;
@@ -86,25 +81,24 @@ document.getElementById("category").addEventListener("change", function() {
             });
         })
         .catch(error => {
-            console.error("Error fetching peripherals: " + error);
+            console.error("Error fetching peripherals:", error);
         });
     } else {
         peripheralDropdown.innerHTML = '<option value="">Select a Category First</option>';
     }
 
-    // Clear the "Unique Number" dropdown when the category changes
-    var uniqueNumberDropdown = document.getElementById("unique_number");
-    uniqueNumberDropdown.innerHTML = '<option value="peripheral.peripheral_description">Select a Peripheral First</option>';
+    // Reset the "Unique Number" dropdown when the category changes
+    document.getElementById("unique_number").innerHTML = '<option value="">Select a Peripheral First</option>';
 });
 
 document.getElementById("peripheral").addEventListener("change", function() {
-    var selectedPeripheralId = this.value;
+    var selectedPeripheral = this.value;
     var uniqueNumberDropdown = document.getElementById("unique_number");
     var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    if (selectedPeripheralId) {
-        // Make an AJAX request to fetch unique numbers for the selected peripheral
-        fetch(`/get_unique_number/${selectedPeripheralId}/`, {
+    if (selectedPeripheral) {
+        // Fetch unique numbers for the selected peripheral
+        fetch(`/get_unique_number/${selectedPeripheral}/`, {
             method: "GET",
             headers: {
                 "X-CSRFToken": csrfToken,
@@ -125,15 +119,11 @@ document.getElementById("peripheral").addEventListener("change", function() {
             }
         })
         .catch(error => {
-            console.error("Error fetching unique numbers: " + error);
+            console.error("Error fetching unique numbers:", error);
         });
     } else {
         uniqueNumberDropdown.innerHTML = '<option value="">Select a Peripheral First</option>';
     }
 });
-
-
-
-
 </script>
 {% endblock content %}
