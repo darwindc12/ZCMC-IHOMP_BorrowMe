@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'ihomp_borrowme',
         'USER': 'postgres',
-        'PASSWORD': 'abracadabr@',
+        'PASSWORD': 'abracadabra',
         'HOST': 'localhost',
         'PORT': '5432',
     }
