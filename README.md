@@ -131,7 +131,7 @@ Want to help improve BorrowMe? Fantastic! Here’s how to get started:
 5. Open a Pull Request
    Head to the main repository and submit your changes for review.
 
-What’s New in Version 1.1.0
-🚀 FastAPI Integration: A modern and blazing-fast API layer.
-🛠 CRUD Endpoints: Manage borrow records with GET, POST, PUT, and DELETE.
-⚡ Performance Boost: API interactions are now quicker and more flexi
+##What’s New in Version 1.1.0
+- 🚀 FastAPI Integration: A modern and blazing-fast API layer.
+- 🛠 CRUD Endpoints: Manage borrow records with GET, POST, PUT, and DELETE.
+-⚡ Performance Boost: API interactions are now quicker and more flexi
