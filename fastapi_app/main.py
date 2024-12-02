@@ -53,3 +53,24 @@ def create_borrow(
     db.commit()
     db.refresh(new_borrow)
     return new_borrow
+
+
+@app.put("/borrows/{borrow_id}")
+def update_borrow(
+    borrow_id: int,
+    borrower_name: str = None,
+    status_id: int = None,
+    db: Session = Depends(get_db),
+):
+    borrow = db.query(Borrow).filter(Borrow.borrow_id == borrow_id).first()
+    if not borrow:
+        raise HTTPException(status_code=404, detail="Borrow not found")
+
+    if borrower_name:
+        borrow.borrower_name = borrower_name
+    if status_id:
+        borrow.status_id = status_id
+
+    db.commit()
+    db.refresh(borrow)
+    return borrow
