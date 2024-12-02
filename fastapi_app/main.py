@@ -74,3 +74,14 @@ def update_borrow(
     db.commit()
     db.refresh(borrow)
     return borrow
+
+
+@app.delete("/borrows/{borrow_id}")
+def delete_borrow(borrow_id: int, db: Session = Depends(get_db)):
+    borrow = db.query(Borrow).filter(Borrow.borrow_id == borrow_id).first()
+    if not borrow:
+        raise HTTPException(status_code=404, detail="Borrow not found")
+
+    db.delete(borrow)
+    db.commit()
+    return {"detail": "Borrow deleted successfully"}
