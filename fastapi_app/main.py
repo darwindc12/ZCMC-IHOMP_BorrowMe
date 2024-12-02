@@ -8,3 +8,11 @@ app = FastAPI()
 
 # Ensure tables are created in the database
 Base.metadata.create_all(bind=engine)
+
+
+@app.get("/borrows/")
+def get_all_borrows(db: Session = Depends(get_db)):
+    borrows = db.query(Borrow).all()
+    return borrows
+
+
