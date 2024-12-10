@@ -32,18 +32,18 @@ Make sure you have the following tools installed:
 ##  **Setup Instructions**
 
 ### 1 **Clone the Repository**
-```bash
+
 git clone https://github.com/yourusername/borrowme.git
 cd borrowme
 
 ### 2 **Build the Docker Image**
 
-```bash
+
 docker build -t borrowme:latest .
 
 ### 3 **Run the Container**
 
-```bash
+
 docker run -p 8000:8000 -p 8001:8001 borrowme:latest
 
 ### 4 **Access the App**
