@@ -1,137 +1,120 @@
-# ZCMC-IHOMP BorrowMe V1.1.0
+📦 ZCMC-IHOMP BorrowMe V1.1.0
+Welcome to BorrowMe, the go-to tool for ZCMC employees to check out, track, and manage peripheral devices. This project includes both a Django web application and a FastAPI API backend.
 
-Welcome to **BorrowMe**, the go-to tool for ZCMC employees to check out peripheral devices and keep track of them. Originally built with Django, we've now added a powerful FastAPI backend to give you even more flexibility and performance.
+New in Version 1.1.0
+🚀 Integrated FastAPI for faster, modern API interactions.
+🛠️ CRUD endpoints to manage borrowing records (GET, POST, PUT, DELETE).
+⚡ Performance improvements for better speed and flexibility.
 
----
+🚀 Features
+Browse Devices: View which devices are available for borrowing.
+Request Devices: Employees can request to borrow devices via the web.
+Admin Management: Admins can update device statuses via the admin panel.
+API Access: FastAPI backend to support CRUD operations for borrow records.
+🗂️ Project Structure
+bash
+Copy code
+project-root/
+├── Dockerfile               # Docker instructions for building the app
+├── requirements.txt         # Python dependencies for Django & FastAPI
+├── README.md                # This file (setup instructions)
+│
+├── src/                     # All the source files live here
+│   ├── manage.py            # Django entry point
+│   ├── qr.py                # QR code generator script
+│   ├── main.py              # Simple script for testing
+│   │
+│   ├── ihomp_borrowme_project/  # Django project directory
+│   │    ├── settings.py     # Django project settings
+│   │    └── other files     # Other Django files (urls.py, models.py, etc.)
+│   │
+│   └── fastapi_app/         # FastAPI project directory
+│       └── main.py          # FastAPI entry point
+🔥 Getting Started
+These instructions will get you up and running with Docker. You'll be able to run both the Django web app and FastAPI API in a single container.
 
-## Table of Contents
+📋 Prerequisites
+Make sure you have the following tools installed:
 
-- [Features](#features)
-- [Installation](#installation)
-- [How to Use It](#how-to-use-it)
-- [API Goodies](#api-goodies)
-- [Contributing](#contributing)
-- [What’s New in Version 1.1.0](#whats-new-in-version-110)
+🐍 Python 3.11 (optional, only if running locally)
+🐳 Docker (this is required for containerized development)
+⚙️ Setup Instructions
+1️⃣ Clone the Repository
 
----
+bash
+Copy code
+git clone https://github.com/yourusername/borrowme.git
+cd borrowme
+2️⃣ Build the Docker Image
 
-## Features
+bash
+Copy code
+docker build -t borrowme:latest .
+📝 This command will copy all files in src/, install dependencies, set up the database, and collect static files.
 
-Here’s what BorrowMe can do:
+3️⃣ Run the Container
 
-- Browse the available devices and see what’s ready to borrow.
-- Request to borrow devices with a few clicks.
-- Admins can manage device statuses right from the admin panel.
-- **New in v1.1.0**:
-  - Fully integrated FastAPI for faster and modern API interactions.
-  - Endpoints for creating, reading, updating, and deleting borrow records.
+bash
+Copy code
+docker run -p 8000:8000 -p 8001:8001 borrowme:latest
+4️⃣ Access the App
 
----
+Django Web App: http://localhost:8000
+FastAPI API Docs: http://localhost:8001/docs
+📚 Usage Instructions
+📘 Django Web App
+URL: http://localhost:8000
+Admin URL: http://localhost:8000/admin
+Default login credentials:
+Username: admin
+Password: admin123
+📘 FastAPI API
+Docs (Swagger UI): http://localhost:8001/docs
+ReDoc API Docs: http://localhost:8001/redoc
+📦 Environment Variables
+Variable	Description	Default
+DJANGO_SETTINGS_MODULE	Django settings file to load.	ihomp_borrowme_project.settings
+DATABASE_URL	Database connection URL.	sqlite:///db.sqlite3
+If you'd like to set up your own PostgreSQL database, you can edit DATABASE_URL in the .env file.
 
-## Installation
+⚙️ API Endpoints
+Endpoint	Method	Description
+/api/borrows/	GET	Get a list of all borrows.
+/api/borrows/{id}	GET	Get details for a specific borrow.
+/api/borrows/	POST	Create a new borrow record.
+/api/borrows/{id}	PUT	Update a specific borrow record.
+/api/borrows/{id}	DELETE	Delete a specific borrow record.
+Pro Tip: Test all the API endpoints directly in Swagger UI at http://localhost:8001/docs.
 
-### What You Need
+🐛 Troubleshooting
+If you encounter issues, here are some common fixes.
 
-- Python 3.x
-- PostgreSQL (our trusty database)
-- Django and FastAPI libraries
-- All other necessary tools are listed in `requirements.txt`.
+Problem: ModuleNotFoundError: No module named 'ihomp_borrowme_project'
+Solution: Ensure your src/ folder is properly structured. You may also need to check the DJANGO_SETTINGS_MODULE environment variable.
 
-### Steps to Get Started
+Problem: Database errors or migrations not applied
+Solution: Rebuild the container and force migrations.
 
-1. **Clone the Repository**  
-   Start by pulling down the project to your local machine:
+bash
+Copy code
+docker-compose down --volumes
+docker-compose up --build
+Problem: "Address already in use" for port 8000 or 8001
+Solution: Make sure nothing else is running on those ports, or change the port mapping in Docker.
 
-   ```bash
-   Copy code
-   git clone https://github.com/yourusername/ZCMC-IHOMP-BorrowMe.git
+📦 How to Contribute
+Fork the repo and create a new branch:
+bash
+Copy code
+git checkout -b feature/your-feature-name
+Make your changes, commit, and push:
+bash
+Copy code
+git push origin feature/your-feature-name
+Open a pull request for review.
+📝 Changelog
+Version 1.1.0
 
-2. **Install Dependencies**  
-   Move into the project folder and install everything you need:
-   
-   ```bash
-   Copy code
-   pip install -r requirements.txt
-
-
-3. **Set Up the Database**  
-
-   - Configure your database settings:
-      - Django: In settings.py
-      - FastAPI: In database.py (look for DATABASE_URL).
-   - Apply the migrations:
-
-   ```bash
-   Copy code
-   python manage.py makemigrations
-   python manage.py migrate
-
-4. **Run the Django App**  
-   Fire up the main web application:
-
-   ```bash
-   Copy code
-   python manage.py runserver
-
-5. **Run the FastAPI App**  
-Spin up the API server:
-
-    ```bash
-   Copy code
-   uvicorn fastapi_app.main:app --reload
-
-5. **You're Ready to Go!**  
-
-   - Web app: http://localhost:8000/
-   - Admin panel: http://localhost:8000/admin/
-   - FastAPI API: http://localhost:8001/
-
-##How to Use It
-###For Everyday Users:
-   1. Open the homepage and browse through the available devices.
-   2. Select a device to see more details.
-   3. Request to borrow it if it’s available.
-
-###For Admins:
-   - Log in to the admin panel (http://localhost:8000/admin/) to manage devices and requests.
-
-
-##API Goodies
-   If you're a developer or just love working with APIs, we've got you covered. BorrowMe now comes with a FastAPI backend that supports:
-
-   - GET: Fetch all borrow records or a specific one.
-   - POST: Add a new borrow request.
-   - PUT: Update existing borrow details.
-   - DELETE: Remove borrow records.
-
-###Explore the API
-   - Swagger Docs: http://localhost:8001/docs
-   - ReDoc Docs: http://localhost:8001/redoc
-You can test all the endpoints directly from your browser or using tools like Postman.
-
-##Contributing
-Want to help improve BorrowMe? Fantastic! Here’s how to get started:
-
-1. Fork the Repository
-   Clone your own copy of the project.
-
-2. Create a New Branch
-
-    ```bash
-   Copy code
-   git checkout -b feature/your-feature-name
-3. Make Your Changes
-   Add new features, fix bugs, or update documentation.
-
-4. Push Your Changes
-
-    ```bash
-   Copy code
-   git push origin feature/your-feature-name
-5. Open a Pull Request
-   Head to the main repository and submit your changes for review.
-
-##What’s New in Version 1.1.0
-- 🚀 FastAPI Integration: A modern and blazing-fast API layer.
-- 🛠 CRUD Endpoints: Manage borrow records with GET, POST, PUT, and DELETE.
--⚡ Performance Boost: API interactions are now quicker and more flexible.
+🚀 Added FastAPI integration.
+🛠️ CRUD endpoints for borrowing records.
+⚡ Performance improvements.
