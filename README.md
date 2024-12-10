@@ -91,7 +91,7 @@ If you encounter issues, here are some common fixes.
 ### **Problem**: **Database errors or migrations not applied**
 **Solution**:  
 Rebuild the container and force migrations by running the following commands:  
-```bash
+
 docker-compose down --volumes
 docker-compose up --build
 
@@ -102,19 +102,19 @@ docker-compose up --build
 
 **How to change port mapping in Docker**:  
 Edit the **docker run** command to map to different ports on your host machine.  
-```bash
+
 docker run -p 8080:8000 -p 8081:8001 borrowme:latest
 
 
 ## **How to Contribute**
 
 ### 1 **Fork the repo and create a new branch**
-```bash
+
 git checkout -b feature/your-feature-name
 
 
 ### 2 **Make your changes, commit, and push**
-```bash
+
 git push origin feature/your-feature-name
 
 ### 3 **Open a pull request for review**
