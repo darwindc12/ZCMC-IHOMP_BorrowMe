@@ -36,7 +36,6 @@ Make sure you have the following tools installed:
 git clone https://github.com/yourusername/borrowme.git
 cd borrowme
 
-
 ### 2 **Build the Docker Image**
 
 ```bash
