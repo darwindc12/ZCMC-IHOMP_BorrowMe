@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db, Base, engine
-from ihomp_borrowme_app.models import Borrow, Department, Peripheral, Category, Status  # Import your models
+from src.ihomp_borrowme_app.models import Borrow, Department, Peripheral, Category, Status  # Import your models
 
 # Create the FastAPI app
 app = FastAPI()
